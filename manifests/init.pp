@@ -66,11 +66,11 @@ class config_elzair (
   }
 
   $gvim = $distro ? {
-    /(?i)(ubuntu|debian|mint) => "vim-gtk",
-    /(?i)(centos|redhat)      => "vim-enhanced",
-    arch                      => "gvim",
-    osx                       => "mvim",
-    default                   => undef,
+    /(?i-mx:ubuntu|debian|mint) => "vim-gtk",
+    /(?i-mx:centos|redhat)      => "vim-enhanced",
+    arch                        => "gvim",
+    osx                         => "mvim",
+    default                     => undef,
   }
 
   if ($gvim) {
@@ -121,9 +121,9 @@ class config_elzair (
   }
 
   $inconsolata = $distro ? {
-    /(?i)(ubuntu|debian|mint) => "ttf-inconsolata",
-    /(?i)(centos|redhat)      => "inconsolata-fonts",
-    default                   => undef,
+    /(?i-mx:ubuntu|debian|mint) => "ttf-inconsolata",
+    /(?i-mx:centos|redhat)      => "inconsolata-fonts",
+    default                     => undef,
   }
 
   if ($inconsolata) {
