@@ -77,7 +77,7 @@ class config_elzair (
 
     file { "~/.vim":
       ensure  => directory,
-      path    => "home_dir/.vim",
+      path    => "$home_dir/.vim",
       owner   => $user,
       group   => $group,
       mode    => "0644",
