@@ -41,18 +41,18 @@ class config_elzair (
     mode   => "0755",
   }
 
-  exec { "install oh-my-zsh":
-    command   => "/bin/sh -c 'curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sh'",
+  exec { "clone oh-my-zsh":
+    command   => "git clone https://github.com/robbyrussell/oh-my-zsh.git $home_dir/.oh-my-zsh",
     path      => $path,
     logoutput => true,
-    require   => [ Package["curl"], Package["zsh"], File["~/misc"] ],
+    require   => [ Class["config_build"], Package["curl"], Package["zsh"], File["~/misc"] ],
   }
 
   exec { "install elzair-zsh-theme":
     command   => "curl -L https://raw.github.com/Elzair/elzair-zsh-theme/master/elzair.zsh-theme -o $home_dir/.oh-my-zsh/themes/elzair.zsh-theme",
     path      => $path,
     logoutput => true,
-    require   => Exec["install oh-my-zsh"],
+    require   => Exec["clone oh-my-zsh"],
   }
 
   $zshrc_src = $operatingsystem ? {
@@ -68,6 +68,13 @@ class config_elzair (
     group   => $group,
     mode    => "0644",
     require => Exec["install elzair-zsh-theme"],
+  }
+
+  exec { "change user shell to zsh":
+    command   => "chsh -s $(which zsh) $user"
+    path      => $path,
+    logoutput => true,
+    require   => File["~/.zshrc"],
   }
 
   $gvim = $distro ? {
