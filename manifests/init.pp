@@ -123,7 +123,7 @@ class config_elzair (
     }
 
     exec { "install vim bundles":
-      command   => "vim +BundleInstall +qall",
+      command   => "vim +BundleInstall +qall 2&> /dev/null",
       path      => $path,
       logoutput => true,
       require   => [ Package["gvim"], Exec["configure gvim"], Exec["install vundle"] ],
