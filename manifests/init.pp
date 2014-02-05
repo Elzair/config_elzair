@@ -1,7 +1,8 @@
 class config_elzair (
   $user = $config_elzair::params::user,
   $group = $config_elzair::params::group,
-  $home_dir = $config_elzair::params::home_dir, 
+  $home_dir = $config_elzair::params::home_dir,
+  $vagrant_dir = $config_elzair::params::root_dir,
   $operatingsystem = $config_elzair::params::operatingsystem,
   $distro = $config_elzair::params::operatingsystem
 ) inherits config_elzair::params 
@@ -24,6 +25,62 @@ class config_elzair (
     ensure => present,
   }
 
+  file { "root .ssh":
+    ensure => directory,
+    path   => "/root/.ssh",
+    owner  => "root",
+    group  => "root",
+    mode   => "0600",
+  }
+  
+  file { "$user .ssh":
+    ensure => directory,
+    path   => "$home_dir/.ssh",
+    owner  => "root",
+    group  => "root",
+    mode   => "0600",
+  }
+
+  file { "root .ssh/id_rsa":
+    ensure  => file,
+    path    => "/root/.ssh/id_rsa",
+    source  => "$vagrant_dir/config/ssh/id_rsa",
+    owner   => "root",
+    group   => "root",
+    mode    => "0600",
+    require => File["root .ssh"],
+  }
+
+  file { "root .ssh/id_rsa.pub":
+    ensure => file,
+    path   => "/root/.ssh/id_rsa.pub",
+    source => "$vagrant_dir/config/ssh/id_rsa.pub",
+    owner  => "root",
+    group  => "root",
+    mode   => "0600",
+    require => File["root .ssh"],
+  }
+
+  file { "$user .ssh/id_rsa":
+    ensure => file,
+    path   => "$home_dir/.ssh/id_rsa",
+    source => "$vagrant_dir/config/ssh/id_rsa",
+    owner  => $user,
+    group  => $user,
+    mode   => "0600",
+    require => File["$user .ssh"],
+  }
+
+  file { "$user .ssh/id_rsa.pub":
+    ensure => file,
+    path   => "$home_dir/.ssh/id_rsa.pub",
+    source => "$vagrant_dir/config/ssh/id_rsa.pub",
+    owner  => $user,
+    group  => $user,
+    mode   => "0600",
+    require => File["$user .ssh"],
+  }
+
   file { "~/.ssh/config":
     ensure => file,
     path   => "$home_dir/.ssh/config",
@@ -31,6 +88,7 @@ class config_elzair (
     owner  => $user,
     group  => $group,
     mode   => "0600",
+    require => File["$user .ssh"],
   }
 
   file { "~/misc":
@@ -109,7 +167,7 @@ class config_elzair (
     }
 
     exec { "configure gvim":
-      command   => "git clone https://github.com/Elzair/my-vimrc.git $home_dir/.vim/my-vimrc && cp $home_dir/.vim/my-vimrc/vimrc $home_dir/.vimrc && cp $home_dir/.vim/my-vimrc/gvimrc $home_dir/.gvimrc",
+      command   => "git clone ssh://git@github.com/Elzair/my-vimrc.git $home_dir/.vim/my-vimrc && chown -R $user\:$group $home_dir/.vim/my-vimrc && cp $home_dir/.vim/my-vimrc/vimrc $home_dir/.vimrc && cp $home_dir/.vim/my-vimrc/gvimrc $home_dir/.gvimrc",
       path      => $path,
       logoutput => true,
       require   => [ Class["config_build"], File["~/.vim"] ],
@@ -126,7 +184,7 @@ class config_elzair (
       command   => "vim +BundleInstall +qall 2&> /dev/null",
       path      => $path,
       logoutput => true,
-      require   => [ Package["gvim"], Exec["configure gvim"], Exec["install vundle"] ],
+      require   => [ Package["gvim"], Exec["configure gvim"], Exec["install vundle"], File["$user .ssh/id_rsa"], File["$user .ssh/id_rsa.pub"] ],
     }
   }
 
