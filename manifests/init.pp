@@ -24,6 +24,15 @@ class config_elzair (
     ensure => present,
   }
 
+  file { "~/.ssh/config":
+    ensure => file,
+    path   => "$home_dir/.ssh/config",
+    source => "pupet:///modules/config_elzair/ssh-config",
+    owner  => $user,
+    group  => $group,
+    mode   => "0600",
+  }
+
   file { "~/misc":
     ensure => directory,
     path   => "$home_dir/misc",
@@ -33,7 +42,7 @@ class config_elzair (
   }
 
   exec { "install oh-my-zsh":
-    command   => "curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sh",
+    command   => "/bin/sh -c 'curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sh'",
     path      => $path,
     logoutput => true,
     require   => [ Package["curl"], Package["zsh"], File["~/misc"] ],
@@ -91,7 +100,6 @@ class config_elzair (
       mode    => "0644",
       require => File["~/.vim"],
     }
-      
 
     exec { "configure gvim":
       command   => "git clone https://github.com/Elzair/my-vimrc.git $home_dir/.vim/my-vimrc && cp $home_dir/.vim/my-vimrc/vimrc $home_dir/.vimrc && cp $home_dir/.vim/my-vimrc/gvimrc $home_dir/.gvimrc",
@@ -113,7 +121,6 @@ class config_elzair (
       logoutput => true,
       require   => [ Package["gvim"], Exec["configure gvim"], Exec["install vundle"] ],
     }
-
   }
 
   $inconsolata = $distro ? {
