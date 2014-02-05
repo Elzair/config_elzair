@@ -27,7 +27,7 @@ class config_elzair (
   file { "~/.ssh/config":
     ensure => file,
     path   => "$home_dir/.ssh/config",
-    source => "pupet:///modules/config_elzair/ssh-config",
+    source => "puppet:///modules/config_elzair/ssh-config",
     owner  => $user,
     group  => $group,
     mode   => "0600",
