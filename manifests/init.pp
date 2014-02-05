@@ -16,10 +16,6 @@ class config_elzair (
     "/bin",
   ]
 
-  package { "git":
-    ensure => present,
-  }
-
   package { "curl":
     ensure => present,
   }
@@ -101,14 +97,14 @@ class config_elzair (
       command   => "git clone https://github.com/Elzair/my-vimrc.git $home_dir/.vim/my-vimrc && cp $home_dir/.vim/my-vimrc/vimrc $home_dir/.vimrc && cp $home_dir/.vim/my-vimrc/gvimrc $home_dir/.gvimrc",
       path      => $path,
       logoutput => true,
-      require   => [ Package["git"], File["~/.vim"] ],
+      require   => [ Class["config_build"], File["~/.vim"] ],
     }
 
     exec { "install vundle":
       command   => "git clone https://github.com/gmarik/vundle.git $home_dir/.vim/bundle/vundle",
       path      => $path,
       logoutput => true,
-      require   => [ Package["git"], File["~/.vim/bundle"] ],
+      require   => [ Class["config_build"], File["~/.vim/bundle"] ],
     }
 
     exec { "install vim bundles":
