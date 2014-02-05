@@ -1,10 +1,10 @@
-class config_elzair inherits config_elzair::params (
+class config_elzair (
   $user = $config_elzair::params::user,
   $group = $config_elzair::params::group,
   $home_dir = $config_elzair::params::home_dir, 
   $operatingsystem = $config_elzair::params::operatingsystem,
   $distro = $config_elzair::params::operatingsystem
-)
+) inherits config_elzair::params 
 {
   $path = [
     "/opt/local/bin",
